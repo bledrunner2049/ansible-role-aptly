@@ -1,5 +1,6 @@
 _aptly_packages:
   - aptly
+  - gpg
 
 _aptly_service: aptly.service
 
