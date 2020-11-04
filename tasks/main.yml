@@ -1,0 +1,60 @@
+- name: Install packages
+  apt:
+    name: "{{ _aptly_packages | join(',') }}"
+    state: latest
+  register: _aptly_packages_status
+
+- name: Create user
+  user:
+    name: "{{ aptly_user }}"
+    shell: /bin/bash
+    system: yes
+
+- name: Combine configurations
+  set_fact:
+    aptly_config: "{{ _aptly_config | combine(aptly_config) }}"
+
+- name: Create configuration file
+  copy:
+    content: "{{ aptly_config | to_nice_json }}"
+    dest: "{{ aptly_config_path }}"
+    mode: 0600
+    owner: "{{ aptly_user }}"
+  register: _aptly_config_status
+
+- name: Create data directory
+  file:
+    state: directory
+    path: "{{ aptly_config.rootDir }}"
+    mode: 0700
+    owner: "{{ aptly_user }}"
+
+- name: Template service
+  template:
+    src: "{{ _aptly_service }}"
+    dest: "/etc/systemd/system/{{ _aptly_service }}"
+    mode: 0644
+  register: _aptly_service_status
+
+- name: Change state
+  systemd:
+    name: "{{ _aptly_service }}"
+    state: |-
+      {%- if aptly_state == 'started' -%}
+        {%- if _aptly_packages_status.changed or 
+               _aptly_config_status.changed or 
+               _aptly_service_status.changed -%}
+          restarted
+        {%- else -%}
+          started
+        {%- endif -%}
+      {%- else -%}
+        {{ aptly_state }}
+      {%- endif -%}
+    enabled: "{{ aptly_enabled }}"
+    daemon_reload: |-
+      {%- if _aptly_service_status.changed -%}
+        yes
+      {%- else -%}
+        no
+      {%- endif -%}

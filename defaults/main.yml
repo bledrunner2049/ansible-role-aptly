@@ -1,0 +1,8 @@
+aptly_user: aptly
+aptly_config_path: /etc/aptly.conf
+aptly_listen: ":80"
+aptly_state: started
+aptly_enabled: yes
+
+aptly_config:
+  rootDir: "/var/lib/aptly"

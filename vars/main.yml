@@ -1,0 +1,26 @@
+_aptly_packages:
+  - aptly
+
+_aptly_service: aptly.service
+
+_aptly_config:
+  rootDir: "/var/lib/aptly"
+  downloadConcurrency: 4
+  downloadSpeedLimit: 0
+  architectures: []
+  dependencyFollowSuggests: false
+  dependencyFollowRecommends: false
+  dependencyFollowAllVariants: false
+  dependencyFollowSource: false
+  dependencyVerboseResolve: false
+  gpgDisableSign: false
+  gpgDisableVerify: false
+  gpgProvider: "gpg"
+  downloadSourcePackages: false
+  skipLegacyPool: true
+  ppaDistributorID: ubuntu
+  ppaCodename: ""
+  skipContentsPublishing: false
+  FileSystemPublishEndpoints: {}
+  S3PublishEndpoints: {}
+  SwiftPublishEndpoints: {}
